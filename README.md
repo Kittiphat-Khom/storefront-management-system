@@ -72,7 +72,13 @@ python manage.py migrate
 python manage.py runserver 8000
 ```
 
-Optional demo users can be created through the register endpoint or Django shell.
+Seed demo accounts and sample products:
+
+```bash
+python manage.py seed
+```
+
+This creates `seller@example.com` and `buyer@example.com` (password: `password123`) plus 6 sample products. Safe to run multiple times.
 
 ## Frontend Setup
 
