@@ -18,48 +18,48 @@ PRODUCTS = [
         "description": "Tenkeyless mechanical keyboard with Cherry MX Brown switches. Compact layout, ideal for programming and everyday typing.",
         "unit_price": "2490.00",
         "available_quantity": 15,
-        "image_seed": "keyboard",
+        "image_keyword": "mechanical,keyboard",
     },
     {
         "title": "Wireless Mouse Pro",
         "description": "Ergonomic wireless mouse with 2.4GHz receiver, 3200 DPI adjustable, 60-hour battery life.",
         "unit_price": "890.00",
         "available_quantity": 30,
-        "image_seed": "mouse-computer",
+        "image_keyword": "computer,mouse",
     },
     {
         "title": "USB-C Hub 7-in-1",
         "description": "7-port USB-C hub: 4K HDMI, 2x USB-A 3.0, USB-C PD 100W, SD/MicroSD card reader.",
         "unit_price": "1290.00",
         "available_quantity": 20,
-        "image_seed": "usb-cables",
+        "image_keyword": "usb,hub,electronics",
     },
     {
         "title": "27-inch Monitor Stand",
         "description": "Adjustable aluminum monitor stand with cable management. Supports monitors up to 27 inches and 10 kg.",
         "unit_price": "1590.00",
         "available_quantity": 8,
-        "image_seed": "monitor-desk",
+        "image_keyword": "monitor,computer,desk",
     },
     {
         "title": "Laptop Sleeve 15-inch",
         "description": "Water-resistant neoprene laptop sleeve with accessory pocket. Fits laptops up to 15.6 inches.",
         "unit_price": "390.00",
         "available_quantity": 50,
-        "image_seed": "laptop-bag",
+        "image_keyword": "laptop,bag,sleeve",
     },
     {
         "title": "Webcam 1080p",
         "description": "Full HD 1080p webcam with built-in microphone and auto light correction. Plug-and-play USB.",
         "unit_price": "1190.00",
         "available_quantity": 2,
-        "image_seed": "webcam",
+        "image_keyword": "webcam,camera",
     },
 ]
 
 
-def _fetch_image(seed: str) -> bytes | None:
-    url = f"https://picsum.photos/seed/{seed}/480/360"
+def _fetch_image(keyword: str) -> bytes | None:
+    url = f"https://loremflickr.com/480/360/{keyword}"
     ctx = ssl.create_default_context()
     ctx.check_hostname = False
     ctx.verify_mode = ssl.CERT_NONE
@@ -97,7 +97,7 @@ class Command(BaseCommand):
 
     def _create_products(self, seller: User) -> None:
         for data in PRODUCTS:
-            seed = data["image_seed"]
+            keyword = data["image_keyword"]
             product, created = Product.objects.get_or_create(
                 seller=seller,
                 title=data["title"],
@@ -108,9 +108,10 @@ class Command(BaseCommand):
                 },
             )
             if created or not product.image:
-                image_data = _fetch_image(seed)
+                image_data = _fetch_image(keyword)
+                filename = keyword.split(",")[0] + ".jpg"
                 if image_data:
-                    product.image.save(f"{seed}.jpg", ContentFile(image_data), save=True)
+                    product.image.save(filename, ContentFile(image_data), save=True)
                     img_status = "with image"
                 else:
                     img_status = "no image (download failed)"
